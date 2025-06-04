@@ -1,0 +1,134 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+// Сортування шаблонне
+template <typename T>
+void simpleSort(T* arr, int size) {
+    for (int i = 0; i < size - 1; i++)
+        for (int j = i + 1; j < size; j++)
+            if (arr[i] > arr[j])
+                swap(arr[i], arr[j]);
+}
+
+// Спеціалізація сортування для char*
+void simpleSort(char** arr, int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = i + 1; j < size; j++) {
+            int k = 0;
+            while (arr[i][k] && arr[j][k] && arr[i][k] == arr[j][k]) k++;
+            if (arr[i][k] > arr[j][k])
+                swap(arr[i], arr[j]);
+        }
+    }
+}
+
+// Бінарний пошук шаблон
+template <typename T>
+int binarySearch(T* arr, int size, T key) {
+    int left = 0, right = size - 1;
+    while (left <= right) {
+        int mid = (left + right) / 2;
+        if (arr[mid] == key) return mid;
+        else if (arr[mid] < key) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}
+
+// Спеціалізація бінарного пошуку для char*
+int binarySearch(char** arr, int size, const char* key) {
+    int left = 0, right = size - 1;
+    while (left <= right) {
+        int mid = (left + right) / 2;
+        int i = 0;
+        while (arr[mid][i] && key[i] && arr[mid][i] == key[i]) i++;
+        if (arr[mid][i] == key[i]) return mid;
+        else if (arr[mid][i] < key[i]) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}
+
+int main() {
+    int choice;
+    cout << "Оберіть тип масиву:\n1. int\n2. double\n3. char*\nВаш вибір: ";
+    cin >> choice;
+
+    int size;
+    cout << "Введіть розмір масиву: ";
+    cin >> size;
+
+    if (choice == 1) {
+        int* arr = new int[size];
+        cout << "Введіть елементи: ";
+        for (int i = 0; i < size; i++) cin >> arr[i];
+
+        simpleSort(arr, size);
+
+        int key;
+        cout << "Введіть значення для пошуку: ";
+        cin >> key;
+
+        int result = binarySearch(arr, size, key);
+        if (result != -1)
+            cout << "Значення знайдено на позиції: " << result << endl;
+        else
+            cout << "Значення не знайдено\n";
+
+        delete[] arr;
+
+    } else if (choice == 2) {
+        double* arr = new double[size];
+        cout << "Введіть елементи: ";
+        for (int i = 0; i < size; i++) cin >> arr[i];
+
+        simpleSort(arr, size);
+
+        double key;
+        cout << "Введіть значення для пошуку: ";
+        cin >> key;
+
+        int result = binarySearch(arr, size, key);
+        if (result != -1)
+            cout << "Значення знайдено на позиції: " << result << endl;
+        else
+            cout << "Значення не знайдено\n";
+
+        delete[] arr;
+
+    } else if (choice == 3) {
+        char** arr = new char*[size];
+        char buffer[100];
+        cout << "Введіть рядки: ";
+        for (int i = 0; i < size; i++) {
+            cin >> buffer;
+            arr[i] = new char[strlen(buffer) + 1];
+            int j = 0;
+            while (buffer[j]) {
+                arr[i][j] = buffer[j];
+                j++;
+            }
+            arr[i][j] = '\0';
+        }
+
+        simpleSort(arr, size);
+
+        cout << "Введіть рядок для пошуку: ";
+        cin >> buffer;
+
+        int result = binarySearch(arr, size, buffer);
+        if (result != -1)
+            cout << "Рядок знайдено на позиції: " << result << endl;
+        else
+            cout << "Рядок не знайдено\n";
+
+        for (int i = 0; i < size; i++) delete[] arr[i];
+        delete[] arr;
+
+    } else {
+        cout << "Невірний вибір!\n";
+    }
+
+    return 0;
+}
