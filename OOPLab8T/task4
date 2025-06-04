@@ -1,0 +1,89 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Шаблон вузла
+template <typename T>
+class Node {
+public:
+    T data;
+    Node* next;
+    Node(T value) : data(value), next(nullptr) {}
+};
+
+// Шаблон однозв’язного списку
+template <typename T>
+class List {
+private:
+    Node<T>* head;
+
+public:
+    List() : head(nullptr) {}
+
+    void push_back(T value) {
+        Node<T>* newNode = new Node<T>(value);
+        if (!head) head = newNode;
+        else {
+            Node<T>* temp = head;
+            while (temp->next) temp = temp->next;
+            temp->next = newNode;
+        }
+    }
+
+    class Iterator {
+        Node<T>* current;
+    public:
+        Iterator(Node<T>* ptr) : current(ptr) {}
+        T& operator*() { return current->data; }
+        Iterator& operator++() { current = current->next; return *this; }
+        bool operator!=(const Iterator& other) const { return current != other.current; }
+    };
+
+    Iterator begin() { return Iterator(head); }
+    Iterator end() { return Iterator(nullptr); }
+
+    ~List() {
+        while (head) {
+            Node<T>* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+};
+
+// Шаблонна функція для зчитування будь-якого типу списку
+template <typename T>
+void inputAndPrintList(const string& typeName) {
+    int n;
+    T value;
+    List<T> list;
+
+    cout << "\nСкільки елементів типу " << typeName << " ввести? ";
+    cin >> n;
+    cin.ignore(); // для типу string
+
+    for (int i = 0; i < n; ++i) {
+        cout << "Елемент #" << i + 1 << ": ";
+        if constexpr (is_same<T, string>::value) {
+            getline(cin, value);
+        } else {
+            cin >> value;
+        }
+        list.push_back(value);
+    }
+
+    cout << "Список " << typeName << ": ";
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+
+// Головна програма
+int main() {
+    inputAndPrintList<int>("int");
+    inputAndPrintList<double>("double");
+    inputAndPrintList<string>("string");
+
+    return 0;
+}
